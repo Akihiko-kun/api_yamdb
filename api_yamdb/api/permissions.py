@@ -6,8 +6,8 @@ class IsAdmin(permissions.IsAdminUser):
 
     def has_permission(self, request, view):
         return (
-            request.user.is_authenticated
-            and request.user.is_admin
+                request.user.is_authenticated
+                and request.user.is_admin
         )
 
 
@@ -22,4 +22,15 @@ class IsAuthorOrModeratorOrAdminOrReadOnly(
                 or obj.author == request.user
                 or request.user.is_moderator
                 or request.user.is_admin
+        )
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """для работы с категориями и жанрами."""
+
+    def has_permission(self, request, view):
+        return (
+                request.method in permissions.SAFE_METHODS
+                or request.user.is_authenticated
+                and request.user.is_admin
         )
