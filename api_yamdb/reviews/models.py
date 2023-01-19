@@ -37,12 +37,12 @@ class Genre(models.Model):
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-        return f'{self.name} {self.name}'
+        return self.name
 
 
 class Title(models.Model):
     category = models.ForeignKey(
-        'Category',
+        Category,
         on_delete=models.SET_NULL,
         related_name='category',
         verbose_name='Категория',
@@ -51,7 +51,7 @@ class Title(models.Model):
 
     )
     genre = models.ForeignKey(
-        'Genre',
+        Genre,
         on_delete=models.SET_NULL,
         related_name='genre',
         verbose_name='Жанр',
@@ -68,7 +68,6 @@ class Title(models.Model):
         verbose_name='Описание',
         max_length=255,
         null=True,
-        blank=True,
     )
 
     class Meta:
