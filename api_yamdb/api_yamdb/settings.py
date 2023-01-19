@@ -14,16 +14,25 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+<<<<<<< HEAD
+=======
+    'reviews.apps.ReviewsConfig',
+    'api.apps.ApiConfig',
+>>>>>>> feature/models-dev2
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'rest_framework',
     'rest_framework_simplejwt',  # jwt-token
     'api',
     'reviews',
+=======
+
+>>>>>>> feature/models-dev2
 ]
 
 MIDDLEWARE = [
