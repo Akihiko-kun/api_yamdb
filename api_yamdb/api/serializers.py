@@ -1,5 +1,3 @@
-from abc import ABC
-
 from rest_framework import serializers
 
 from reviews.models import User
@@ -51,11 +49,3 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return value
 
-
-class TokenSerializer(serializers.Serializer, ABC):
-    username = serializers.CharField(required=True)
-    confirmation_code = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'confirmation_code')

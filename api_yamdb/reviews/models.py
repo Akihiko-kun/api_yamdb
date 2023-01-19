@@ -1,10 +1,88 @@
-from django.db import models
+from datetime import timezone
 
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator
+from django.db import models
+
+
+class Category(models.Model):
+    name = models.CharField(
+        max_length=250,
+        verbose_name='Название',
+    )
+    slug = models.SlugField(
+        unique=True,
+        max_length=50,
+        verbose_name='Слаг',
+    )
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        return f'{self.name} {self.name}'
+
+
+class Genre(models.Model):
+    name = models.CharField(
+        max_length=250,
+        verbose_name='Название',
+    )
+    slug = models.SlugField(
+        unique=True,
+        max_length=50,
+        verbose_name='Слаг',
+    )
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        return f'{self.name} {self.name}'
+
+
+class Title(models.Model):
+    category = models.ForeignKey(
+        'Category',
+        on_delete=models.SET_NULL,
+        related_name='category',
+        verbose_name='Категория',
+        null=True,
+        blank=True,
+
+    )
+    genre = models.ForeignKey(
+        'Genre',
+        on_delete=models.SET_NULL,
+        related_name='genre',
+        verbose_name='Жанр',
+        null=True,
+    )
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=256,
+    )
+    year = models.IntegerField(
+        verbose_name='Год выпуска',
+    )
+    description = models.TextField(
+        verbose_name='Описание',
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
+    def __str__(self):
+        return self.name
 
 
 class User(AbstractUser):
-
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -15,23 +93,12 @@ class User(AbstractUser):
         (ADMIN, 'Администратор'),
     )
 
-    username = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=200,
-        unique=True,
-        help_text=f'Набор символов не более 200.'
-                  'Только буквы, цифры и @/./+/-/_',
-        error_messages={
-            'unique': "Пользователь с таким именем уже существует!",
-        },
-    )
     email = models.EmailField(
-        max_length=150,
         unique=True,
         verbose_name='Адрес электронной почты'
     )
     role = models.CharField(
-        max_length=max(len(role) for role, _ in ROLE_CHOICES),
+        max_length=255,
         choices=ROLE_CHOICES,
         default=USER,
         verbose_name='Роль'
@@ -42,13 +109,15 @@ class User(AbstractUser):
     )
 
     class Meta:
-        ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    def __str__(self) -> str:
+        return self.username
+
     @property
     def is_admin(self):
-        return self.role == self.ADMIN or self.is_superuser or self.is_staff
+        return self.role == self.ADMIN
 
     @property
     def is_moderator(self):
@@ -57,6 +126,3 @@ class User(AbstractUser):
     @property
     def is_user(self):
         return self.role == self.USER
-
-
-
