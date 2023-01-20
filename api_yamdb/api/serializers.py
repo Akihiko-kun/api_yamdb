@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Имя пользователя "me" не разрешено.'
             )
-        return
+        return value
 
 class CategorySerializer(serializers.ModelSerializer):
 
