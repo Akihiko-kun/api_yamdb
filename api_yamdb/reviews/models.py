@@ -4,7 +4,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(
-        max_length=250,
+        max_length=256,
         verbose_name='Название',
     )
     slug = models.SlugField(
@@ -65,7 +65,7 @@ class Title(models.Model):
     description = models.TextField(
         verbose_name='Описание',
         max_length=255,
-        null=True,
+        blank=True,
     )
 
     class Meta:
