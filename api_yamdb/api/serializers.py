@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
         
-    def validate(self, value):
+    def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(
                 'Имя пользователя "me" не разрешено.'
