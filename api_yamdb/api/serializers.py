@@ -31,7 +31,13 @@ class UserSerializer(serializers.ModelSerializer):
                 ]
             }
         }
-
+        
+    def validate(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                'Имя пользователя "me" не разрешено.'
+            )
+        return
 
 class CategorySerializer(serializers.ModelSerializer):
 
