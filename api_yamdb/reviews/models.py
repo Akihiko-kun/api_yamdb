@@ -87,7 +87,7 @@ class User(AbstractUser):
     ROLE_CHOICES = (
         (USER, 'Пользователь'),
         (ADMIN, 'Модератор'),
-        (ADMIN, 'Администратор'),
+        (MODERATOR, 'Администратор'),
     )
 
     email = models.EmailField(
