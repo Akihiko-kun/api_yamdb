@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
                 ]
             }
         }
-        
+
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(
@@ -43,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
+        model = Category
         fields = '__all__'
         extra_kwargs = {
             'slug': {
@@ -61,7 +61,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = '__all__'
+        fields = ('name', 'slug')
         extra_kwargs = {
             'slug': {
                 'validators': [
@@ -76,7 +76,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     description = serializers.CharField(required=False)
-    genre = serializers.SlugField(many=True)
+    genre = serializers.SlugField()
 
     class Meta:
         model = Title
