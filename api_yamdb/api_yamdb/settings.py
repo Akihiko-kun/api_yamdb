@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',  # jwt-token
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
