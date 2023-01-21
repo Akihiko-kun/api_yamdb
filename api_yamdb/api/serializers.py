@@ -39,6 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return value
 
+
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
