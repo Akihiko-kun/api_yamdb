@@ -1,7 +1,7 @@
 import datetime as dt
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import Category, Genre, Title, User
+from reviews.models import Category, Genre, Title, User, Review, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -99,3 +99,17 @@ class TitleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Выберите категорию из ранее созданных!')
         return value
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
