@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
                 ]
             }
         }
-        
+
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(
@@ -41,7 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = '__all__'
@@ -58,7 +57,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Genre
         fields = '__all__'

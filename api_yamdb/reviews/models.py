@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Category(models.Model):
+    objects = models.Manager()
     name = models.CharField(
         max_length=256,
         verbose_name='Название',
@@ -22,6 +23,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
+    objects = models.Manager()
     name = models.CharField(
         max_length=250,
         verbose_name='Название',
@@ -41,6 +43,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    objects = models.Manager()
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -77,6 +80,7 @@ class Title(models.Model):
 
 
 class User(AbstractUser):
+    objects = models.Manager()
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -123,6 +127,7 @@ class User(AbstractUser):
 
 
 class Review(models.Model):
+    objects = models.Manager()
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -152,6 +157,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    objects = models.Manager()
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
