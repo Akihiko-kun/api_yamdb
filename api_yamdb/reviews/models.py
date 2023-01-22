@@ -78,7 +78,7 @@ class Title(models.Model):
 
 
 class User(AbstractUser):
-    objects = models.Manager()
+    objects = UserManager()
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
