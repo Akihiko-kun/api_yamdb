@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 
 
@@ -85,8 +85,8 @@ class User(AbstractUser):
 
     ROLE_CHOICES = (
         (USER, 'Пользователь'),
-        (ADMIN, 'Модератор'),
-        (MODERATOR, 'Администратор'),
+        (MODERATOR, 'Модератор'),
+        (ADMIN, 'Администратор'),
     )
 
     email = models.EmailField(
@@ -105,6 +105,7 @@ class User(AbstractUser):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -113,7 +114,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.ADMIN
+        return self.role == self.ADMIN or self.is_superuser
 
     @property
     def is_moderator(self):

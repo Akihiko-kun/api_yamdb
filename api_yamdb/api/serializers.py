@@ -1,11 +1,44 @@
 import datetime as dt
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
+from api.validator import UsernameRegValidator
 from reviews.models import Category, Genre, Title, User, Review, Comment
 
 
+class SingUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                'Имя пользователя "me" не разрешено.'
+            )
+        return value
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=True,
+    )
+    confirmation_code = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code',)
+
+
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150)
+    username = serializers.CharField(
+        max_length=150,
+        validators=[
+            UniqueValidator(queryset=User.objects.all()),
+            UsernameRegValidator()
+        ]
+    )
     email = serializers.EmailField(max_length=254)
     first_name = serializers.CharField(max_length=150, required=False)
     last_name = serializers.CharField(max_length=150, required=False)
@@ -21,16 +54,6 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
-        extra_kwargs = {
-            'username': {
-                'validators': [
-                    UniqueValidator(
-                        queryset=User.objects.all(),
-                        message='Такой пользователь уже существует'
-                    )
-                ]
-            }
-        }
 
     def validate_username(self, value):
         if value == 'me':
@@ -100,14 +123,12 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Review
         fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Comment
         fields = '__all__'
