@@ -27,7 +27,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 #    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    lookup_field = ('slug',)
+    lookup_field = 'slug'
 
     def get_permissions(self):
         if self.action == 'list':
