@@ -78,7 +78,7 @@ class Title(models.Model):
 
 
 class User(AbstractUser):
-    # objects = UserManager()
+    objects = UserManager()
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -150,9 +150,9 @@ class Review(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    
-    def __str__(self):
-        return self.title
+
+    class Meta:
+        ordering = ['created']
 
 
 class Comment(models.Model):
@@ -178,5 +178,5 @@ class Comment(models.Model):
         db_index=True
     )
 
-    def __str__(self):
-        return self.text
+    class Meta:
+        ordering = ['created']
