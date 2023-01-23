@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.permissions import IsRoleAdmin
+from api.permissions import IsRoleAdmin, IsRoleModerator, IsAuthorOrReadOnly, ReadOnly
 from reviews.models import User, Category, Genre, Title, Review, Comment
 from .serializers import (
     UserSerializer,
@@ -84,40 +84,39 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('username',)
-    permission_classes = [IsRoleAdmin]
+    permission_classes = (IsRoleAdmin,)
     lookup_field = 'username'
 
     @action(
         detail=False,
         methods=(['GET', 'PATCH']),
         permission_classes=[IsAuthenticated],
+        url_path='me',
     )
-    def me(self, request):  # это чадо заставило не плохо так подумать в redoc'е про него было
+    def me(self, request):
         if request.method == 'GET':
             serializer = UserSerializer(request.user)
+        else:
+            serializer = UserSerializer(
+                instance=request.user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(role=request.user.role)
             return Response(serializer.data)
-
-        serializer = UserSerializer(
-            request.user,
-            data=request.data,
-            partial=True,
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save(role=request.user.role)
         return Response(serializer.data)
 
 
 @api_view(['POST'])
-def singup(request):
+def signup(request):
     serializer = SingUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get('username')
     email = serializer.validated_data.get('email')
-    user, created = User.objects.get_or_create(username=username, email=email)  # Cпасибо Карену
+    user, created = User.objects.get_or_create(username=username, email=email)
     token = default_token_generator.make_token(user)
     try:
         send_mail(

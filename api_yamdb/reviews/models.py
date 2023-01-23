@@ -83,11 +83,11 @@ class User(AbstractUser):
     ADMIN = 'admin'
     MODERATOR = 'moderator'
 
-    ROLE_CHOICES = (
+    ROLE_CHOICES = [
         (USER, 'Пользователь'),
         (MODERATOR, 'Модератор'),
         (ADMIN, 'Администратор'),
-    )
+    ]
 
     email = models.EmailField(
         unique=True,
@@ -109,7 +109,7 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.username
 
     @property
@@ -150,7 +150,7 @@ class Review(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    
+
     def __str__(self):
         return self.title
 

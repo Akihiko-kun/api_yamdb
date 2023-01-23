@@ -30,19 +30,23 @@ class TokenSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'confirmation_code',)
 
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                'Имя пользователя "me" не разрешено.'
+            )
+        return value
+
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
+        required=True,
         max_length=150,
         validators=[
             UniqueValidator(queryset=User.objects.all()),
             UsernameRegValidator()
         ]
     )
-    email = serializers.EmailField(max_length=254)
-    first_name = serializers.CharField(max_length=150, required=False)
-    last_name = serializers.CharField(max_length=150, required=False)
-    role = serializers.CharField(required=False)
 
     class Meta:
         model = User
@@ -54,6 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
+        read_only_field = ('role',)
 
     def validate_username(self, value):
         if value == 'me':
