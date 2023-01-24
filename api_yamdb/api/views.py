@@ -56,6 +56,7 @@ class GenreViewSet(ListCreateDestroyViewSet):
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
     def get_permissions(self):
         if self.action == 'list':
@@ -71,7 +72,11 @@ class TitleViewSet(viewsets.ModelViewSet):
         'retrieve': TitleSerializerGet,
         'list': TitleSerializerGet,
         'create': TitleSerializerPost,
+        'partial_update': TitleSerializerPost,
     }
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('genre',)
+    # lookup_field = 'slug'
 
     def get_queryset(self):
         return Title.objects.annotate(

@@ -137,7 +137,7 @@ class TitleSerializerGet(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = '__all__'                              # добавил 'rating',
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')                              # добавил 'rating',
 
     def get_rating(self, obj):
         return obj.score
