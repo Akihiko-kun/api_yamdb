@@ -137,7 +137,7 @@ class UserViewSet(viewsets.ModelViewSet):
         url_path='me',
     )
     def me(self, request):
-        if request.method == 'GET':
+        if request.method == 'PATCH':
             serializer = UserSerializer(request.user)
         else:
             serializer = UserSerializer(
