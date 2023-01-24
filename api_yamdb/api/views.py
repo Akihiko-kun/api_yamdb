@@ -74,7 +74,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Title.objects.annotate(
-            score=Avg("reviews__score")).order_by("name") #стек оверфло увидел такую реализацию
+            score=Avg("reviews__score")).order_by("name")  # стек оверфло увидел такую реализацию
 
     def get_serializer_class(self):
         if hasattr(self, 'serializer_class_by_action'):
@@ -94,7 +94,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (IsAdminModeratorOrReadOnly,)# написал свой пермишен а то если юзать несколько никто не пройдёт
+    permission_classes = (
+    IsAdminModeratorOrReadOnly,)  # написал свой пермишен а то если юзать несколько никто не пройдёт
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get("title_id"))
@@ -137,7 +138,7 @@ class UserViewSet(viewsets.ModelViewSet):
         url_path='me',
     )
     def me(self, request):
-        if request.method == 'PATCH':
+        if request.method == 'GET':
             serializer = UserSerializer(request.user)
         else:
             serializer = UserSerializer(
@@ -152,41 +153,38 @@ class UserViewSet(viewsets.ModelViewSet):
 def signup(request):
     serializer = SingUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
-    user, created = User.objects.get_or_create(username=username, email=email)
-    token = default_token_generator.make_token(user)
     try:
-        send_mail(
-            'confirmation code',
-            token,
-            'experiment@gmail.com',
-            [email],
-        )
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        user, _ = User.objects.get_or_create(username=username, email=email)
     except IntegrityError:
-        user.delete()
-        return Response(
-            data={'error': 'Ошибка при отправки кода подтверждения!'},
-            status=status.HTTP_400_BAD_REQUEST,
+        real_error = (
+            'Это имя пользователя уже занято.'
+            if User.objects.filter(username=username).exists()
+            else 'Эта электронная почта уже занята.'
         )
+        return Response(real_error, status.HTTP_400_BAD_REQUEST)
+
+    confirmation_code = default_token_generator.make_token(user)
+    send_mail(
+        subject='Регистрация в проекте YaMDb',
+        message=f'Ваш проверочный код: {confirmation_code}',
+        from_email='experiment@gmail.com',
+        recipient_list=[user.email],
+    )
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 def get_token(request):
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    user = get_object_or_404(User, username=username)
-    confirmation_code = serializer.validated_data.get(
-        'confirmation_code'
+    user = get_object_or_404(
+        User, username=serializer.validated_data.get('username')
     )
-    if default_token_generator.check_token(user, confirmation_code):
+    if default_token_generator.check_token(
+            user, serializer.validated_data.get('confirmation_code')
+    ):
         token = AccessToken.for_user(user)
-        return response.Response(
-            {'token': str(token)}, status=status.HTTP_200_OK
-        )
-    return response.Response(
-        {'confirmation_code': 'Неверный код подтверждения!'},
-        status=status.HTTP_400_BAD_REQUEST
-    )
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
