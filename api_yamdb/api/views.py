@@ -9,6 +9,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModelMixin, UpdateModelMixin
 
 from api.permissions import IsRoleAdmin, IsRoleModerator, IsAuthorOrReadOnly, ReadOnly
 from reviews.models import User, Category, Genre, Title, Review, Comment
@@ -60,7 +61,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         'retrieve': TitleSerializerGet,
         'list': TitleSerializerGet,
         'create': TitleSerializerPost,
-        
     }
 
     def get_serializer_class(self):
