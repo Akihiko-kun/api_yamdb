@@ -73,7 +73,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('name', 'slug')
         extra_kwargs = {
             'slug': {
                 'validators': [
@@ -102,9 +102,17 @@ class GenreSerializer(serializers.ModelSerializer):
         }
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class TitleSerializerPost(serializers.ModelSerializer):
     description = serializers.CharField(required=False)
-    genre = serializers.SlugField()
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        many=True,
+        queryset=Genre.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
 
     class Meta:
         model = Title
@@ -114,6 +122,11 @@ class TitleSerializer(serializers.ModelSerializer):
         year_now = dt.date.today().year
         if not (value <= year_now):
             raise serializers.ValidationError('Проверьте год выпуска!')
+        return value
+
+    def validate_name(self, value):
+        if not (len(f'{value}') <= 256):
+            raise serializers.ValidationError('Слишком длинное название!')
         return value
 
     def validate_genre(self, value):
@@ -127,6 +140,18 @@ class TitleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Выберите категорию из ранее созданных!')
         return value
+
+
+class TitleSerializerGet(serializers.ModelSerializer):
+
+    class Meta:
+        model = Title
+        fields = (
+            'id', 'name',
+            'year',
+            'description', 'genre',
+            'category'
+        )                               # добавить 'rating',
 
 
 class ReviewSerializer(serializers.ModelSerializer):

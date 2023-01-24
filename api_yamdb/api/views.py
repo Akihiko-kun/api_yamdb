@@ -16,7 +16,8 @@ from .serializers import (
     UserSerializer,
     CategorySerializer,
     GenreSerializer,
-    TitleSerializer,
+    TitleSerializerPost,
+    TitleSerializerGet,
     ReviewSerializer,
     CommentSerializer,
     SingUpSerializer,
@@ -27,7 +28,6 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    #    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -56,7 +56,20 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+    serializer_class_by_action = {
+        'retrieve': TitleSerializerGet,
+        'list': TitleSerializerGet,
+        'create': TitleSerializerPost,
+        
+    }
+
+    def get_serializer_class(self):
+        if hasattr(self, 'serializer_class_by_action'):
+            return self.serializer_class_by_action.get(
+                self.action,
+                self.serializer_class
+            )
+        return super(TitleViewSet, self).get_serializer_class()
 
     def get_permissions(self):
         if self.action == 'list' or self.action == 'retrieve':
