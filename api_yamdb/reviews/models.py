@@ -72,13 +72,14 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+        ordering = ['name'] #тесты намекнули
 
     def __str__(self):
         return self.name
 
 
 class User(AbstractUser):
-    # objects = UserManager()
+    #objects = UserManager()
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -142,21 +143,22 @@ class Review(models.Model):
         related_name='reviews',
         verbose_name='Автор',
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг',
-    )
-    created = models.DateTimeField(
+    )# более подходящее поле
+    pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True,
         db_index=True
     )
 
-    def __str__(self):
-        return self.title
+    class Meta:
+        ordering = ['pub_date']
+
 
 
 class Comment(models.Model):
-    # objects = models.Manager()
+    objects = models.Manager()
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
@@ -172,11 +174,11 @@ class Comment(models.Model):
         verbose_name='Пользователь',
         related_name='comments'
     )
-    created = models.DateTimeField(
+    pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True,
         db_index=True
     )
 
-    def __str__(self):
-        return self.text
+    class Meta:
+        ordering = ['pub_date']

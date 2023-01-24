@@ -131,15 +131,16 @@ class TitleSerializerPost(serializers.ModelSerializer):
 
 
 class TitleSerializerGet(serializers.ModelSerializer):
+    rating = serializers.SerializerMethodField()
+    genre = GenreSerializer(many=True) #тоже тесты 
+    category = CategorySerializer() #оказывается в каждом тесте их дохрена
 
     class Meta:
         model = Title
-        fields = (
-            'id', 'name',
-            'year',
-            'description', 'genre',
-            'category'
-        )                               # добавить 'rating',
+        fields = '__all__'                              # добавил 'rating',
+
+    def get_rating(self, obj):
+        return obj.score
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -162,8 +163,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         if request.method == 'POST':
             if Review.objects.filter(title=title, author=author).exists():
                 raise ValidationError('Только один отзыв')
-            if 0 > score > 10:
-                raise ValidationError('Неверная оценка')
+            if 0 > score:
+                raise ValidationError('Оценка слишком мала') #не принимало двойное неравенство
+            if score > 10:
+                raise ValidationError('Оценка слишком велика')# вышло не очень красиво
         return data
 
     class Meta:
