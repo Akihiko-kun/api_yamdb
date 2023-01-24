@@ -129,18 +129,6 @@ class TitleSerializerPost(serializers.ModelSerializer):
             raise serializers.ValidationError('Слишком длинное название!')
         return value
 
-    def validate_genre(self, value):
-        if not Genre.objects.filter(name=f'{value}').exists():
-            raise serializers.ValidationError(
-                'Выберите жанр из ранее созданных!')
-        return value
-
-    def validate_category(self, value):
-        if not Category.objects.filter(name=f'{value}').exists():
-            raise serializers.ValidationError(
-                'Выберите категорию из ранее созданных!')
-        return value
-
 
 class TitleSerializerGet(serializers.ModelSerializer):
 
