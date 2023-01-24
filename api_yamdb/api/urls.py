@@ -21,12 +21,10 @@ router.register('users', UserViewSet, basename='users')
 router.register('categories', CategoryViewSet)
 router.register('genres', GenreViewSet)
 router.register('titles', TitleViewSet)
-router.register(
-    r'titles/(?P<title_id>\d+)/reviews', ReviewViewSet, basename='reviews'
-)
-router.register(
-    r'titles/(?P<title_id>\d+)/reviews/(?P<reviews_id>\d+)/comments', CommentViewSet, basename='comments'
-)
+router.register(r'titles/(?P<title_id>\d+)/reviews',
+                ReviewViewSet, basename='reviews')
+router.register(r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)'
+                r'/comments', CommentViewSet, basename='comments') # не видел путь без переноса
 
 urlpatterns = [
     path('v1/', include(router.urls)),
