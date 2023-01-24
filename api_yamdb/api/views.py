@@ -10,6 +10,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModelMixin, UpdateModelMixin
 
 from api.permissions import IsRoleAdmin, IsRoleModerator, IsAuthorOrReadOnly, ReadOnly, IsAdminModeratorOrReadOnly
 from reviews.models import User, Category, Genre, Title, Review, Comment
@@ -55,6 +56,7 @@ class GenreViewSet(ListCreateDestroyViewSet):
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
     def get_permissions(self):
         if self.action == 'list':
@@ -70,7 +72,11 @@ class TitleViewSet(viewsets.ModelViewSet):
         'retrieve': TitleSerializerGet,
         'list': TitleSerializerGet,
         'create': TitleSerializerPost,
+        'partial_update': TitleSerializerPost,
     }
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('genre',)
+    # lookup_field = 'slug'
 
     def get_queryset(self):
         return Title.objects.annotate(
