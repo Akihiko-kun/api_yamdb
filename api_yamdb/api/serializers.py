@@ -9,10 +9,18 @@ from api.validator import UsernameRegValidator
 from reviews.models import Category, Genre, Title, User, Review, Comment
 
 
-class SingUpSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'email',)
+class SingUpSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[
+            UsernameRegValidator()
+        ]
+    )
+    email = serializers.EmailField(
+        required=True,
+        max_length=254,
+    )
 
     def validate_username(self, value):
         if value == 'me':
@@ -22,15 +30,9 @@ class SingUpSerializer(serializers.ModelSerializer):
         return value
 
 
-class TokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        required=True,
-    )
+class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
     confirmation_code = serializers.CharField()
-
-    class Meta:
-        model = User
-        fields = ('username', 'confirmation_code',)
 
     def validate_username(self, value):
         if value == 'me':
@@ -60,7 +62,6 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
-        read_only_field = ('role',)
 
     def validate_username(self, value):
         if value == 'me':
@@ -132,12 +133,12 @@ class TitleSerializerPost(serializers.ModelSerializer):
 
 class TitleSerializerGet(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
-    genre = GenreSerializer(many=True) #тоже тесты 
-    category = CategorySerializer() #оказывается в каждом тесте их дохрена
+    genre = GenreSerializer(many=True)  # тоже тесты
+    category = CategorySerializer()  # оказывается в каждом тесте их дохрена
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')                              # добавил 'rating',
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')  # добавил 'rating',
 
     def get_rating(self, obj):
         return obj.score
@@ -164,9 +165,9 @@ class ReviewSerializer(serializers.ModelSerializer):
             if Review.objects.filter(title=title, author=author).exists():
                 raise ValidationError('Только один отзыв')
             if 0 > score:
-                raise ValidationError('Оценка слишком мала') #не принимало двойное неравенство
+                raise ValidationError('Оценка слишком мала')  # не принимало двойное неравенство
             if score > 10:
-                raise ValidationError('Оценка слишком велика')# вышло не очень красиво
+                raise ValidationError('Оценка слишком велика')  # вышло не очень красиво
         return data
 
     class Meta:

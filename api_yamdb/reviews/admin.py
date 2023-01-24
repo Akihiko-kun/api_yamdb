@@ -1,15 +1,13 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 
 from .models import User, Category, Genre, Title, Review, Comment
 
-# admin.site.register(User, UserAdmin)    раскомментировать после удаления костыля
 
-@admin.register(User)               # костыль
+@admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'role', 'bio')
     search_fields = ('bio',)
-    empty_value_display = '-пусто-'  # конец костыля
+    empty_value_display = '-пусто-'
 
 
 admin.site.register(Title)

@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Category(models.Model):
-    # objects = models.Manager()
+    objects = models.Manager()
     name = models.CharField(
         max_length=256,
         verbose_name='Название',
@@ -23,7 +23,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    # objects = models.Manager()
+    objects = models.Manager()
     name = models.CharField(
         max_length=250,
         verbose_name='Название',
@@ -43,7 +43,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    # objects = models.Manager()
+    objects = models.Manager()
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -72,14 +72,14 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-        ordering = ['name'] #тесты намекнули
+        ordering = ['name']  # тесты намекнули
 
     def __str__(self):
         return self.name
 
 
 class User(AbstractUser):
-    #objects = UserManager()
+    objects = UserManager()
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -104,6 +104,10 @@ class User(AbstractUser):
         blank=True,
         verbose_name='Биография'
     )
+    confirmation_code = models.CharField(
+        blank=True,
+        max_length=255,
+    )
 
     class Meta:
         ordering = ('id',)
@@ -127,7 +131,7 @@ class User(AbstractUser):
 
 
 class Review(models.Model):
-    # objects = models.Manager()
+    objects = models.Manager()
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -145,7 +149,7 @@ class Review(models.Model):
     )
     score = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг',
-    )# более подходящее поле
+    )  # более подходящее поле
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True,
@@ -154,7 +158,6 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['pub_date']
-
 
 
 class Comment(models.Model):
