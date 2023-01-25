@@ -39,7 +39,7 @@ class Genre(models.Model):
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-        return self.name
+        return self.slug
 
 
 class Title(models.Model):
@@ -55,6 +55,7 @@ class Title(models.Model):
         Genre,
         related_name='genre',
         verbose_name='Жанр',
+        through='GenreTitle'
     )
     name = models.CharField(
         verbose_name='Название',
@@ -76,6 +77,14 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class GenreTitle(models.Model):
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.genre} {self.title}'
 
 
 class User(AbstractUser):
@@ -102,11 +111,12 @@ class User(AbstractUser):
     )
     bio = models.TextField(
         blank=True,
-        verbose_name='Биография'
+        verbose_name='Биография',
     )
     confirmation_code = models.CharField(
         blank=True,
         max_length=255,
+        null=True
     )
 
     class Meta:
