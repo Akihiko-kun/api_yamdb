@@ -2,7 +2,7 @@
 
 
 from django.core.management import BaseCommand
-# Import the model 
+
 from reviews.models import Title
 
 
@@ -28,5 +28,10 @@ class Command(BaseCommand):
 
         # Code to load the data into database
         for row in DictReader(open('./static/data/titles.csv')):
-            title = Title(id=row['id'], name=row['name'], year=row['year'], category_id=row['category'])
+            title = Title(
+                id=row['id'],
+                name=row['name'],
+                year=row['year'],
+                category_id=row['category']
+            )
             title.save()

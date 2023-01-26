@@ -2,7 +2,7 @@
 
 
 from django.core.management import BaseCommand
-# Import the model 
+
 from reviews.models import Category
 
 
@@ -28,5 +28,9 @@ class Command(BaseCommand):
 
         # Code to load the data into database
         for row in DictReader(open('./static/data/category.csv')):
-            category = Category(id=row['id'], name=row['name'], slug=row['slug'])
+            category = Category(
+                id=row['id'],
+                name=row['name'],
+                slug=row['slug']
+            )
             category.save()

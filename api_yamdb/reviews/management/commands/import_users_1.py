@@ -2,7 +2,7 @@
 
 
 from django.core.management import BaseCommand
-# Import the model 
+
 from reviews.models import User
 
 
@@ -28,5 +28,14 @@ class Command(BaseCommand):
 
         # Code to load the data into database
         for row in DictReader(open('./static/data/users.csv')):
-            user = User(id=row['id'], username=row['username'], email=row['email'], role=row['role'], bio=row['bio'], first_name=row['first_name'], last_name=row['last_name'], confirmation_code='')  # костыль для conf_code, иначе ошибка при импорте
+            user = User(
+                id=row['id'],
+                username=row['username'],
+                email=row['email'],
+                role=row['role'],
+                bio=row['bio'],
+                first_name=row['first_name'],
+                last_name=row['last_name'],
+                confirmation_code=''
+            )
             user.save()

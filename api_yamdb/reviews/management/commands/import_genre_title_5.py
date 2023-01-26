@@ -2,7 +2,7 @@
 
 
 from django.core.management import BaseCommand
-# Import the model 
+
 from reviews.models import GenreTitle
 
 
@@ -28,5 +28,9 @@ class Command(BaseCommand):
 
         # Code to load the data into database
         for row in DictReader(open('./static/data/genre_title.csv')):
-            gt = GenreTitle(id=row['id'], genre_id=row['genre_id'], title_id=row['title_id'])
+            gt = GenreTitle(
+                id=row['id'],
+                genre_id=row['genre_id'],
+                title_id=row['title_id']
+            )
             gt.save()

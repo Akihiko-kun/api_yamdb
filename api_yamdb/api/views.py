@@ -146,7 +146,10 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer = UserSerializer(request.user)
         else:
             serializer = UserSerializer(
-            instance=request.user, data=request.data, partial=True)
+                instance=request.user,
+                data=request.data,
+                partial=True,
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save(role=request.user.role)
             return Response(serializer.data)

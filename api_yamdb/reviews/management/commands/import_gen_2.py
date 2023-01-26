@@ -2,7 +2,7 @@
 
 
 from django.core.management import BaseCommand
-# Import the model 
+
 from reviews.models import Genre
 
 
