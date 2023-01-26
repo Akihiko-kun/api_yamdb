@@ -11,7 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModelMixin, UpdateModelMixin
-
+from api.filters import TitleFilter
 from api.permissions import IsRoleAdmin, IsRoleModerator, IsAuthorOrReadOnly, ReadOnly, IsAdminModeratorOrReadOnly
 from reviews.models import User, Category, Genre, Title, Review, Comment
 from .serializers import (
@@ -74,9 +74,8 @@ class TitleViewSet(viewsets.ModelViewSet):
         'create': TitleSerializerPost,
         'partial_update': TitleSerializerPost,
     }
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('genre',)
-    # lookup_field = 'slug'
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TitleFilter
 
     def get_queryset(self):
         return Title.objects.annotate(
