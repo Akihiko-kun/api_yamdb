@@ -1,11 +1,11 @@
 import datetime as dt
 
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from api.validator import UsernameRegValidator
 from reviews.models import Category, Genre, Title, User, Review, Comment
 
 
@@ -14,7 +14,7 @@ class SingUpSerializer(serializers.Serializer):
         required=True,
         max_length=150,
         validators=[
-            UsernameRegValidator()
+            UnicodeUsernameValidator()
         ]
     )
     email = serializers.EmailField(
@@ -48,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
         max_length=150,
         validators=[
             UniqueValidator(queryset=User.objects.all()),
-            UsernameRegValidator()
+            UnicodeUsernameValidator()
         ]
     )
 
@@ -74,7 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', 'slug')
+        fields = ('name', 'slug',)
         extra_kwargs = {
             'slug': {
                 'validators': [
@@ -90,7 +90,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
+        fields = ('name', 'slug',)
         extra_kwargs = {
             'slug': {
                 'validators': [
@@ -117,7 +117,7 @@ class TitleSerializerPost(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category',)
 
     def validate_year(self, value):
         year_now = dt.date.today().year
@@ -133,12 +133,20 @@ class TitleSerializerPost(serializers.ModelSerializer):
 
 class TitleSerializerGet(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
-    genre = GenreSerializer(many=True)  # тоже тесты
-    category = CategorySerializer()  # оказывается в каждом тесте их дохрена
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')  # добавил 'rating',
+        fields = (
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category',
+        )
 
     def get_rating(self, obj):
         return obj.score
@@ -165,9 +173,9 @@ class ReviewSerializer(serializers.ModelSerializer):
             if Review.objects.filter(title=title, author=author).exists():
                 raise ValidationError('Только один отзыв')
             if 0 > score:
-                raise ValidationError('Оценка слишком мала')  # не принимало двойное неравенство
+                raise ValidationError('Оценка слишком мала')
             if score > 10:
-                raise ValidationError('Оценка слишком велика')  # вышло не очень красиво
+                raise ValidationError('Оценка слишком велика')
         return data
 
     class Meta:

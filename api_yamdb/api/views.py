@@ -3,17 +3,17 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, response
+from rest_framework import filters, status
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import api_view, action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, DestroyModelMixin, UpdateModelMixin
+
 from api.filters import TitleFilter
-from api.permissions import IsRoleAdmin, IsRoleModerator, IsAuthorOrReadOnly, ReadOnly, IsAdminModeratorOrReadOnly
-from reviews.models import User, Category, Genre, Title, Review, Comment
+from api.permissions import IsRoleAdmin, IsAdminModeratorOrReadOnly
+from reviews.models import User, Category, Genre, Title, Review
 from .serializers import (
     UserSerializer,
     CategorySerializer,
@@ -79,7 +79,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Title.objects.annotate(
-            score=Avg("reviews__score")).order_by("name")  # стек оверфло увидел такую реализацию
+            score=Avg('reviews__score')).order_by('name')
 
     def get_serializer_class(self):
         if hasattr(self, 'serializer_class_by_action'):
@@ -99,11 +99,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (
-    IsAdminModeratorOrReadOnly,)  # написал свой пермишен а то если юзать несколько никто не пройдёт
+    permission_classes = (IsAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
-        title = get_object_or_404(Title, pk=self.kwargs.get("title_id"))
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         return title.reviews.all()
 
     def perform_create(self, serializer):
@@ -117,7 +116,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
-        review = get_object_or_404(Review, pk=self.kwargs.get("review_id"))
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         return review.comments.all()
 
     def perform_create(self, serializer):
@@ -147,7 +146,7 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer = UserSerializer(request.user)
         else:
             serializer = UserSerializer(
-                instance=request.user, data=request.data, partial=True)
+            instance=request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save(role=request.user.role)
             return Response(serializer.data)

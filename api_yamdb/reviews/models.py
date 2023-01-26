@@ -80,6 +80,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
+    objects = models.Manager()
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
@@ -159,7 +160,7 @@ class Review(models.Model):
     )
     score = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг',
-    )  # более подходящее поле
+    )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True,
@@ -170,8 +171,8 @@ class Review(models.Model):
         ordering = ['pub_date']
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'author'],# смысл исключения в том что для ревью,
-                name='exception_for_reviews'# данные поля должны быть уникальны в паре
+                fields=['title', 'author'],
+                name='exception_for_reviews'
             ),
         ]
 
