@@ -2,7 +2,7 @@
 
 
 from django.core.management import BaseCommand
-# Import the model 
+
 from reviews.models import Comment
 
 
@@ -28,5 +28,11 @@ class Command(BaseCommand):
 
         # Code to load the data into database
         for row in DictReader(open('./static/data/comments.csv')):
-            comment = Comment(id=row['id'], review_id=row['review_id'], text=row['text'], author_id=row['author'], pub_date=row['pub_date'])
+            comment = Comment(
+                id=row['id'],
+                review_id=row['review_id'],
+                text=row['text'],
+                author_id=row['author'],
+                pub_date=row['pub_date']
+            )
             comment.save()

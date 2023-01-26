@@ -202,4 +202,3 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['pub_date']
-       
