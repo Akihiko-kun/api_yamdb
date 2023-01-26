@@ -69,13 +69,13 @@ class Title(models.Model):
         blank=True,
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
         ordering = ['name']  # тесты намекнули
-
-    def __str__(self):
-        return self.name
 
 
 class User(AbstractUser):
@@ -158,6 +158,12 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['pub_date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'author'],# смысл исключения в том что для ревью,
+                name='exception_for_reviews'# данные поля должны быть уникальны в паре
+            ),
+        ]
 
 
 class Comment(models.Model):
@@ -185,3 +191,4 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['pub_date']
+       
