@@ -121,12 +121,12 @@ class TitleSerializerPost(serializers.ModelSerializer):
 
     def validate_year(self, value):
         year_now = dt.date.today().year
-        if not (value <= year_now):
+        if value > year_now:
             raise serializers.ValidationError('Проверьте год выпуска!')
         return value
 
     def validate_name(self, value):
-        if not (len(f'{value}') <= 256):
+        if len({value}) > 256:
             raise serializers.ValidationError('Слишком длинное название!')
         return value
 
