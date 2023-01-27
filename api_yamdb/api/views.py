@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status
+from rest_framework import filters, status, permissions
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import api_view, action
 from rest_framework.generics import get_object_or_404
@@ -13,7 +13,9 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from api.filters import TitleFilter
 from api.permissions import IsRoleAdmin, IsAdminModeratorOrReadOnly
-from reviews.models import User, Category, Genre, Title, Review
+from api_yamdb.settings import FROM_EMAIL
+from reviews.models import Category, Genre, Title, Review
+from users.models import User
 from .serializers import (
     UserSerializer,
     CategorySerializer,
@@ -132,7 +134,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('username',)
-    permission_classes = (IsRoleAdmin,)
+    permission_classes = (
+        permissions.IsAuthenticated,
+        IsRoleAdmin,
+    )
     lookup_field = 'username'
 
     @action(
@@ -142,16 +147,15 @@ class UserViewSet(viewsets.ModelViewSet):
         url_path='me',
     )
     def me(self, request):
+        serializer = UserSerializer(
+            instance=request.user,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=request.user.role)
         if request.method == 'GET':
             serializer = UserSerializer(request.user)
-        else:
-            serializer = UserSerializer(
-                instance=request.user,
-                data=request.data,
-                partial=True,
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(role=request.user.role)
             return Response(serializer.data)
         return Response(serializer.data)
 
@@ -176,7 +180,7 @@ def signup(request):
     send_mail(
         subject='Регистрация в проекте YaMDb',
         message=f'Ваш проверочный код: {confirmation_code}',
-        from_email='experiment@gmail.com',
+        from_email=FROM_EMAIL,
         recipient_list=[user.email],
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
