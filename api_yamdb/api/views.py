@@ -171,8 +171,6 @@ def signup(request):
     except IntegrityError:
         real_error = (
             'Это имя пользователя уже занято.'
-            if User.objects.filter(username=username).exists()
-            else 'Эта электронная почта уже занята.'
         )
         return Response(real_error, status.HTTP_400_BAD_REQUEST)
 
