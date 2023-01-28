@@ -90,7 +90,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         return super(TitleViewSet, self).get_serializer_class()
 
     def get_permissions(self):
-        if self.action == 'list' or self.action == 'retrieve':
+        if self.action in ['list', 'retrieve']:
             permission_classes = [AllowAny]
         else:
             permission_classes = [IsRoleAdmin]
