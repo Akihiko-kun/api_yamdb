@@ -127,7 +127,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'patch', 'delete'] # я вам писал по поводу этого
+    http_method_names = ['get', 'post', 'patch', 'delete'] # Написал в пачку
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
