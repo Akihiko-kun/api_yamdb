@@ -69,7 +69,9 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        score=Avg("reviews__score")
+    ).order_by("name")
     serializer_class_by_action = {
         'retrieve': TitleSerializerGet,
         'list': TitleSerializerGet,
@@ -78,10 +80,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     }
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
-
-    def get_queryset(self):
-        return Title.objects.annotate(
-            score=Avg('reviews__score')).order_by('name')
 
     def get_serializer_class(self):
         if hasattr(self, 'serializer_class_by_action'):
