@@ -13,7 +13,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from api.filters import TitleFilter
 from api.permissions import IsRoleAdmin, IsAdminModeratorOrReadOnly
-from api_yamdb.settings import FROM_EMAIL
+from django.conf import settings
 from reviews.models import Category, Genre, Title, Review
 from users.models import User
 from .serializers import (
@@ -129,7 +129,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    # http_method_names = ['get', 'post', 'patch', 'delete']
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
@@ -178,7 +178,7 @@ def signup(request):
     send_mail(
         subject='Регистрация в проекте YaMDb',
         message=f'Ваш проверочный код: {confirmation_code}',
-        from_email=FROM_EMAIL,
+        from_email=settings.FROM_EMAIL,
         recipient_list=[user.email],
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
