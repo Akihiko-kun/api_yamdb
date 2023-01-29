@@ -31,8 +31,14 @@ class SingUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    confirmation_code = serializers.CharField()
+    username = serializers.CharField(
+        max_length=250,
+        write_only=True
+    )
+    confirmation_code = serializers.CharField(
+        max_length=255,
+        write_only=True
+    )
 
     def validate_username(self, value):
         if value == 'me':
