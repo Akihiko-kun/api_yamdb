@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from users.models import User
@@ -33,7 +34,6 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='Слаг',
     )
-    objects = models.Manager()
 
     class Meta:
         verbose_name = 'Жанр'
@@ -108,6 +108,7 @@ class Review(models.Model):
     )
     score = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг',
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',

@@ -69,7 +69,9 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        score=Avg('reviews__score')
+    ).order_by('name')
     serializer_class_by_action = {
         'retrieve': TitleSerializerGet,
         'list': TitleSerializerGet,
@@ -78,10 +80,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     }
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
-
-    def get_queryset(self):
-        return Title.objects.annotate(
-            score=Avg('reviews__score')).order_by('name')
 
     def get_serializer_class(self):
         if hasattr(self, 'serializer_class_by_action'):
@@ -92,7 +90,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         return super(TitleViewSet, self).get_serializer_class()
 
     def get_permissions(self):
-        if self.action == 'list' or self.action == 'retrieve':
+        if self.action in ['list', 'retrieve']:
             permission_classes = [AllowAny]
         else:
             permission_classes = [IsRoleAdmin]
@@ -129,7 +127,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    # http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'patch', 'delete']  # Написал в пачку
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
@@ -154,9 +152,6 @@ class UserViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save(role=request.user.role)
-        if request.method == 'GET':
-            serializer = UserSerializer(request.user)
-            return Response(serializer.data)
         return Response(serializer.data)
 
 
